@@ -22,7 +22,7 @@ extern "C" {
 
 using namespace std;
 
-#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(53, 5, 0)
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(52, 66, 100)
 int av_frame_copy(AVFrame *dst, const AVFrame *src);
 #endif
 
@@ -130,7 +130,7 @@ void H264Decoder::decodeFrame(uint8_t* data, int size)
         }
 }
 
-#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(53, 5, 0)
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(52, 66, 100)
 static int frame_copy_video(AVFrame *dst, const AVFrame *src)
 {
         const uint8_t *src_data[4];

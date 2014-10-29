@@ -1,9 +1,21 @@
-Required Libraries and Tools:
+Operating Systems:
+Fedora 20 x86_64
+Ubuntu 14.04 LTS x86_64
 
-SDL2-devel x264-devel x264-libs ffmpeg-devel gobject-introspection-devel glib2-devel glib-devel yasm perl-Digest-MD5 gstreamer1-plugins-base-devel gtk-doc openssl-devel bzip2-devel gcc gcc-c++ make autogen vim patch git subversion intltool
+Required Libraries and Tools for Server and Client Tool on Fedora:
+sudo yum install SDL2-devel x264-devel x264-libs gobject-introspection-devel glib2-devel glib-devel yasm perl-Digest-MD5 gstreamer1-plugins-base-devel gtk-doc openssl-devel bzip2-devel gcc gcc-c++ make autogen vim patch git subversion intltool
+
+Required Libraries and Tools for Server and Client Tool on Ubuntu:
+sudo apt-get install gcc g++ libsdl2-dev x264 libx264-dev gobject-introspection git vim patch subversion intltool libglib2.0-dev yasm libbz2-dev libssl-dev autogen gtk-doc-tools libxml2-dev
 
 Build:
-Make
+make
 
 Start:
-./clientd
+./build/clientd
+
+
+Notes:
+
+ * libav is not compatible with these tools, therefore a static version of ffmpeg is  compiled and used in both the client and the server tool
+ * compilation should now work on Ubuntu as well, but the functionality has not been tested so far
