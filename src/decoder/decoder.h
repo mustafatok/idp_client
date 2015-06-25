@@ -11,34 +11,34 @@ extern "C" {
 #include <libavutil/frame.h>
 }
 
-using FrameFunction = std::function<void(AVFrame*)>;
+using FrameFunction = std::function<void(AVFrame*, AVFrame*)>;
 
 class H264Decoder {
 public:
-        explicit H264Decoder();
-        virtual ~H264Decoder();
+	explicit H264Decoder();
+	virtual ~H264Decoder();
 
-        void decode(uint8_t type, uint8_t* data, int size);
+	virtual void decode(uint8_t type, uint8_t* data, int size);
 
-        template <typename ObjectType>
-        void setFrameCallback(ObjectType *instance, 
-                void (ObjectType::*callback)(AVFrame*))
-        {
-                frameCallback = [=](AVFrame* f) {
-                        (instance->*callback)(f);
-                };
-        }
+	template <typename ObjectType>
+	void setFrameCallback(ObjectType *instance, 
+		void (ObjectType::*callback)(AVFrame*, AVFrame*))
+	{
+		frameCallback = [=](AVFrame* l, AVFrame* r) {
+				(instance->*callback)(l, r);
+		};
+	}
 
-private:
-        void decodeHeader(uint8_t *data, int size);
-        void decodeFrame(uint8_t *data, int size);
+protected:
+	virtual void decodeHeader(uint8_t *data, int size);
+	virtual void decodeFrame(uint8_t *data, int size);
+	virtual void postProcessFrame();
+	FrameFunction frameCallback;
 
-        FrameFunction frameCallback;
-
-        AVCodec *codec = nullptr;
-        AVCodecContext *codecContext = nullptr;
-        AVFrame *picture = nullptr;
-        AVPacket packet;
+	AVCodec *codec = nullptr;
+	AVCodecContext *codecContext = nullptr;
+	AVFrame *picture = nullptr;
+	AVPacket packet;
 };
 
 #endif // __DECODER_H

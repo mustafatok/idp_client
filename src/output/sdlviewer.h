@@ -10,28 +10,32 @@ extern "C" {
 
 class SdlViewer {
 public:
-        explicit SdlViewer(int width, int height);
-        virtual ~SdlViewer();
+	explicit SdlViewer(int width, int height);
+	virtual ~SdlViewer();
 
-        void showFrame(AVFrame *frame);
+	virtual void showFrame(AVFrame *lFrame, AVFrame *rFrame = nullptr);
 
-        bool show(bool fullscreen = false);
+	virtual bool show(bool fullscreen = false);
 
-private:
-        void renderFrame(AVFrame *frame);
+protected:
 
-        SDL_Window *window       = nullptr;
-        SDL_Renderer *renderer   = nullptr;
-        SDL_Surface *bitmap      = nullptr;
-        SDL_Texture *texture     = nullptr;
-        SDL_Texture *frameTexture = nullptr;
+	SDL_Window *window       = nullptr;
+	SDL_Renderer *renderer   = nullptr;
+	SDL_Surface *bitmap      = nullptr;
+	SDL_Texture *texture     = nullptr;
+	SDL_Texture *lFrameTexture = nullptr;
+	SDL_Texture *rFrameTexture = nullptr;
 
-        bool stopped = false;
+	bool stopped = false;
 
-        std::mutex frameLock;
-        AVFrame *currentFrame = nullptr;
-		int width;
-		int height;
+	std::mutex frameLock;
+	AVFrame *currentLFrame = nullptr;
+	AVFrame *currentRFrame = nullptr;
+
+	virtual void renderFrame(AVFrame *lFrame, AVFrame *rFrame);
+	int width;
+	int height;
+
 };
 
 #endif // __SDLVIEWER_H
