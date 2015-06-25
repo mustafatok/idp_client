@@ -1,7 +1,7 @@
 CXX    ?= g++
 #CXX	= clang++ -Wno-reserved-user-defined-literal
-CFLAGS  = -Wall -std=c++11 -pthread -Wno-literal-suffix
-LIBS    = -L/usr/lib/x86_64-linux-gnu -lz -ldl -lbz2 -lcrypto
+CFLAGS  = -pedantic -Wall -std=c++11 -pthread -Wno-literal-suffix
+LIBS    = -L/usr/lib/x86_64-linux-gnu -lz -lGL -lGLU -lGLEW -lOVR -ldl -lbz2 -lcrypto -lX11
 LIBS   += $(shell pkg-config --cflags --libs sdl2)
 LIBS   += $(shell export PKG_CONFIG_PATH=`pwd`/build/stage/lib/pkgconfig/ && pkg-config --cflags libavcodec libavutil libavfilter libswscale libavformat)
 OBJS    = build/stage/lib/libavformat.a build/stage/lib/libavcodec.a \
