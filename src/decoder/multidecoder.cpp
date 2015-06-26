@@ -20,14 +20,30 @@ extern "C" {
 
 #include "../global.h"
 
-using namespace std;
+MultiH264Decoder::MultiH264Decoder(std::string mode)
+{
+	this->_mode = mode;
+	_decoders[0].setDecoderObserver(LEFT, this);
+	_decoders[1].setDecoderObserver(RIGHT, this);
+}
 
-#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(52, 66, 100)
-int av_frame_copy(AVFrame *dst, const AVFrame *src);
-#endif
+MultiH264Decoder::~MultiH264Decoder()
+{
+}
 
+void MultiH264Decoder::onEncodedDataReceived(int id, uint8_t type, uint8_t* data, int size){
+	_decoders[0].onEncodedDataReceived(id, type, data, size);
+	// if(_mode == "mergedOutput"){
+		// this->mergedOutput(uint8_t type, uint8_t* data, int size);
+	// }else{
 
-void MultiH264Decoder::postProcessFrame()
+	// }
+}
+void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
+	mergedOutput(frame);
+}
+
+void MultiH264Decoder::mergedOutput(AVFrame *frame)
 {
 	// copy the frame data, it will be used asynchronously and the original
 	// memory will already be overwritten by the next decoded frame 
@@ -35,23 +51,23 @@ void MultiH264Decoder::postProcessFrame()
 	AVFrame *leftFrame = av_frame_alloc();
 	AVFrame *rightFrame = av_frame_alloc();
 
-	leftFrame->linesize[0] = picture->linesize[0];
-	leftFrame->linesize[1] = picture->linesize[1];
-	leftFrame->linesize[2] = picture->linesize[2];
-	leftFrame->linesize[3] = picture->linesize[3];
+	leftFrame->linesize[0] = frame->linesize[0];
+	leftFrame->linesize[1] = frame->linesize[1];
+	leftFrame->linesize[2] = frame->linesize[2];
+	leftFrame->linesize[3] = frame->linesize[3];
 
-	rightFrame->linesize[0] = picture->linesize[0];
-	rightFrame->linesize[1] = picture->linesize[1];
-	rightFrame->linesize[2] = picture->linesize[2];
-	rightFrame->linesize[3] = picture->linesize[3];
+	rightFrame->linesize[0] = frame->linesize[0];
+	rightFrame->linesize[1] = frame->linesize[1];
+	rightFrame->linesize[2] = frame->linesize[2];
+	rightFrame->linesize[3] = frame->linesize[3];
 
-	leftFrame->width = picture->width;
-	leftFrame->height = picture->height / 2;
-	leftFrame->format = picture->format;
+	leftFrame->width = frame->width;
+	leftFrame->height = frame->height / 2;
+	leftFrame->format = frame->format;
 
-	rightFrame->width = picture->width;
-	rightFrame->height = picture->height / 2;
-	rightFrame->format = picture->format;
+	rightFrame->width = frame->width;
+	rightFrame->height = frame->height / 2;
+	rightFrame->format = frame->format;
 
 	av_frame_get_buffer(leftFrame, 64);
 	av_frame_get_buffer(rightFrame, 64);
@@ -60,21 +76,22 @@ void MultiH264Decoder::postProcessFrame()
 
 	// TODO Hardcoded i!!!
 	for (int i = 0; i < 3; ++i){
-		int height = picture->height;
+		int height = frame->height;
 		if(i != 0){
 			height /= 2;
 		}
-		int size = picture->linesize[i]*height;
+		int size = frame->linesize[i]*height;
 
 		int j;
 		for (j = 0; j < size; ++j)
 		{
 			if(j < size / 2){
-				leftFrame->data[i][j] = picture->data[i][j];
+				leftFrame->data[i][j] = frame->data[i][j];
 			}else{
-				rightFrame->data[i][j -( size / 2)] = picture->data[i][j];
+				rightFrame->data[i][j -( size / 2)] = frame->data[i][j];
 			}
 		}
 	}
-	frameCallback(leftFrame, rightFrame);
+	_observer->onDecodeFrameSuccess(_id, leftFrame, rightFrame);
 }
+

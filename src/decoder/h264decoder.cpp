@@ -1,4 +1,4 @@
-#include "decoder.h"
+#include "h264decoder.h"
 
 #include <iostream>
 
@@ -133,7 +133,7 @@ void H264Decoder::postProcessFrame()
 	av_frame_get_buffer(newFrame, 64);
 	av_frame_copy(newFrame, picture);
 
-	frameCallback(newFrame, nullptr);
+	_observer->onDecodeFrameSuccess(_id, newFrame);
 }
 
 #if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(52, 66, 100)

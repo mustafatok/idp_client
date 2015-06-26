@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 #include <stdint.h>
 
+#include "input.h"
+
 #define HEADER_SIZE 5
 
 /*
@@ -18,7 +20,7 @@
 
 typedef void connection_callback_t (struct sockaddr_in*, int);
 
-class UdpSocket {
+class UdpSocket : public Input{
 public:
 	explicit UdpSocket();
 	virtual ~UdpSocket();
@@ -33,14 +35,6 @@ public:
 	void close();
 	void send(uint8_t* data, int size);
 	void send(uint8_t type, uint8_t* data, int size);
-
-	template <typename ObjectType>
-	void setReadCallback(ObjectType *instance, void (ObjectType::*callback)(uint8_t, uint8_t*, int))
-	{
-		readCallback = [=](uint8_t t, uint8_t* d, int s) {
-			(instance->*callback)(t, d, s);
-		};
-	}
 
 	void setConnectionCallback(connection_callback_t* callback)
 	{

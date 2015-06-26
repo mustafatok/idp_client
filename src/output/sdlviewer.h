@@ -3,12 +3,12 @@
 
 #include <SDL.h>
 #include <mutex>
-
+#include "../observer/decoderobserver.h"
 extern "C" {
 #include <libavutil/frame.h>
 }
 
-class SdlViewer {
+class SdlViewer : public DecoderObserver{
 public:
 	explicit SdlViewer(int width, int height);
 	virtual ~SdlViewer();
@@ -16,6 +16,14 @@ public:
 	virtual void showFrame(AVFrame *lFrame, AVFrame *rFrame = nullptr);
 
 	virtual bool show(bool fullscreen = false);
+
+	// Observer Functions
+	virtual void onDecodeFrameSuccess(int id, AVFrame *frame){
+		showFrame(frame, nullptr);
+	}
+	virtual void onDecodeFrameSuccess(int id, AVFrame *lFrame, AVFrame *rFrame) {
+		showFrame(lFrame, rFrame);
+	}
 
 protected:
 

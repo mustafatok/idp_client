@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 
 	UdpSocket socket;
 	// H264Decoder decoder;
-	MultiH264Decoder decoder;
+	MultiH264Decoder decoder("mergedOutput");
 	SdlViewer *viewer = nullptr;
 	
 	bool fullscreen = false;
@@ -62,9 +62,8 @@ int main(int argc, char* argv[])
 
 	
 
-	socket.setReadCallback(&decoder, &MultiH264Decoder::decode);
-	// socket.setReadCallback(&decoder, &H264Decoder::decode);
-	decoder.setFrameCallback(viewer, &SdlViewer::showFrame);
+	socket.setInputObserver(0, &decoder);
+	decoder.setDecoderObserver(0, viewer);
 	socket.initClient(TARGET_IP, TARGET_PORT);
 	socket.send(PROTOCOL_TYPE_INIT, nullptr, 0);
 	viewer->show(fullscreen);

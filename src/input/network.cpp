@@ -26,9 +26,6 @@ inline int posix_close(int fd)
 
 UdpSocket::UdpSocket()
 {
-	readCallback = [](uint8_t, uint8_t*, int) {
-		// dummy
-	};
 }
 
 UdpSocket::~UdpSocket()
@@ -167,7 +164,8 @@ void UdpSocket::operator()()
 			}
 
 			headerValid = false;
-			readCallback(payloadType, payload, payloadSize);
+    		_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
+
 		}
 	}
 }

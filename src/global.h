@@ -13,6 +13,9 @@
 
 #define STATUS_INPUT_END                        0x50
 
+#define LEFT 1
+#define RIGHT 2
+
 inline void initHeader(uint8_t* header, uint8_t type, int size)
 {
         header[0] = type;
