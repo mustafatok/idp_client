@@ -16,10 +16,10 @@
 #define LEFT 1
 #define RIGHT 2
 
-inline void initHeader(uint8_t* header, uint8_t type, int size)
+inline void initHeader(uint8_t* header, uint8_t type, uint32_t size)
 {
         header[0] = type;
-        int32_t* payloadSize = reinterpret_cast<int32_t*>(header + 1);
+        uint32_t* payloadSize = reinterpret_cast<uint32_t*>(header + 1);
         *payloadSize = size;
 }
 

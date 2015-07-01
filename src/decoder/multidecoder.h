@@ -27,10 +27,16 @@ public:
 
 
 protected:
-	virtual void mergedOutput(AVFrame *frame);
+	virtual void verticalConcat(AVFrame *frame);
+	void deserializeAndDecode(int id, uint8_t type, uint8_t* data, int size);
+
 
 	H264Decoder _decoders[2];
 	std::string _mode;
+
+	int _tmpCnt = 0;
+	AVFrame *lFrame;
+	AVFrame *rFrame;
 };
 
 #endif // __MULTIDECODER_H

@@ -32,18 +32,67 @@ MultiH264Decoder::~MultiH264Decoder()
 }
 
 void MultiH264Decoder::onEncodedDataReceived(int id, uint8_t type, uint8_t* data, int size){
-	_decoders[0].onEncodedDataReceived(id, type, data, size);
-	// if(_mode == "mergedOutput"){
-		// this->mergedOutput(uint8_t type, uint8_t* data, int size);
-	// }else{
+	if(_mode == "verticalConcat"){
+		_decoders[0].onEncodedDataReceived(id, type, data, size);
+	}else{
+		this->deserializeAndDecode(id, type, data, size);
+	}
+}
 
-	// }
+void MultiH264Decoder::deserializeAndDecode(int id, uint8_t type, uint8_t* data, int size){
+	uint8_t lType, rType;
+
+	lType = data[0];
+	rType = data[1];
+
+	uint32_t leftSize = *(reinterpret_cast<uint32_t*>(data + 2));
+	uint32_t rightSize = *(reinterpret_cast<uint32_t*>(data + 2 + sizeof(uint32_t)));
+
+	uint8_t* lData = new uint8_t[leftSize + 8];
+	uint8_t* rData = new uint8_t[rightSize + 8];
+
+	memcpy(lData, data + 2 +  2*sizeof(uint32_t), leftSize);
+	memcpy(rData, data + 2 +  2*sizeof(uint32_t) + leftSize, rightSize);
+
+	_decoders[0].onEncodedDataReceived(id, lType, lData, leftSize);
+	_decoders[1].onEncodedDataReceived(id, rType, rData, rightSize);
 }
 void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
-	mergedOutput(frame);
+	if(_mode == "verticalConcat"){
+		verticalConcat(frame);
+		return;
+	}
+	if(id == LEFT){
+		lFrame = frame;
+	}else{
+		rFrame = frame;
+	}
+	if((++_tmpCnt) == 2){
+		// AVFrame *tmpFrame = nullptr;
+
+		// if(_mode == "leftResized"){
+		// 	tmpFrame = lFrame;
+		// }else if(_mode == "rightResized"){
+		// 	tmpFrame = rFrame;
+		// }
+
+		// if(tmpFrame != nullptr){
+		// 	AVFrame* frame2 = av_frame_alloc();
+		// 	int num_bytes = avpicture_get_size(PIX_FMT_YUV420P, tmpFrame->width * 2, tmpFrame->height * 2);
+		// 	uint8_t* frame2_buffer = (uint8_t *)av_malloc(num_bytes*sizeof(uint8_t));
+		// 	avpicture_fill((AVPicture*)frame2, frame2_buffer, PIX_FMT_YUV420P, tmpFrame->width * 2, tmpFrame->height * 2);
+		// 	sws_scale(swsctx, tmpFrame->data, tmpFrame->linesize, 0, tmpFrame->height * 2, frame2->data, frame2->linesize);
+
+		// }
+
+
+		_observer->onDecodeFrameSuccess(_id, lFrame, rFrame);
+		_tmpCnt = 0;
+	}	
+
 }
 
-void MultiH264Decoder::mergedOutput(AVFrame *frame)
+void MultiH264Decoder::verticalConcat(AVFrame *frame)
 {
 	// copy the frame data, it will be used asynchronously and the original
 	// memory will already be overwritten by the next decoded frame 

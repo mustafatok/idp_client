@@ -127,10 +127,12 @@ void UdpSocket::operator()()
 				continue;
 			}
 
+
 			headerValid = true;
 			payloadType = header[0];
 			uint8_t* sizePtr = &header[1];
-			payloadSize = *(reinterpret_cast<int32_t*>(sizePtr));
+			payloadSize = *(reinterpret_cast<uint32_t*>(sizePtr));
+			cout << "Reading header succeeded, size: " << payloadSize << endl;
 
 			if (payloadSize > 0) {
 				payload = new uint8_t[payloadSize + 8]; // +8 because of decoder, otherwise we would have to copy everything!!
@@ -150,7 +152,7 @@ void UdpSocket::operator()()
 					cerr << "Reading payload failed! " << strerror(errno)<< ", recvsize: "<< result  << endl;
 					continue;
 				} else if (result + payloadPosition == payloadSize) {
-					cerr << "Reading payload succeeded, size: " << result << endl;
+					cout << "Reading payload succeeded, size: " << payloadSize << endl;
 					payloadPosition = 0;
 				} else {
 					payloadPosition += result;
@@ -179,9 +181,9 @@ void UdpSocket::send(uint8_t* data, int size)
 
 void UdpSocket::send(uint8_t type, uint8_t* data, int size)
 {
-	uint8_t packetHeader[5];
+	uint8_t packetHeader[HEADER_SIZE];
 	initHeader(packetHeader, type, size);
-	send(packetHeader, 5); // transmit header
+	send(packetHeader, HEADER_SIZE); // transmit header
 	if (data != nullptr && size > 0) {
 		send(data, size); // transmit payload
 	}

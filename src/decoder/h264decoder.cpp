@@ -73,6 +73,7 @@ void H264Decoder::decodeHeader(uint8_t* data, int size)
 		return;
 	}
 
+	cout << "Header Decoded!" << endl;
 	av_init_packet(&packet);
 
 	// don't send header information atm, as currently we include this information in the I-Frames

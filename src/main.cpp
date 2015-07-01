@@ -39,7 +39,8 @@ int main(int argc, char* argv[])
 
 	UdpSocket socket;
 	// H264Decoder decoder;
-	MultiH264Decoder decoder("mergedOutput");
+	// MultiH264Decoder decoder("verticalConcat");
+	MultiH264Decoder decoder("leftResized");
 	SdlViewer *viewer = nullptr;
 	
 	bool fullscreen = false;
