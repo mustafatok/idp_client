@@ -215,7 +215,8 @@ void OculusViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 
 		glViewport(eye == ovrEye_Left ? 0 : fb_width / 2, 0, fb_width / 2, fb_height);
 
-		proj = ovrMatrix4f_Projection(hmd->DefaultEyeFov[eye], 0.5, 500.0, 1);
+		// proj = ovrMatrix4f_Projection(hmd->DefaultEyeFov[eye], 0.0, 0.0, eye);
+		proj = ovrMatrix4f_Projection(hmd->DefaultEyeFov[eye], 0.5, 500.0, 0);
 		glMatrixMode(GL_PROJECTION);
 		glLoadTransposeMatrixf(proj.M[0]);
 
@@ -226,7 +227,7 @@ void OculusViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 				eye_rdesc[eye].HmdToEyeViewOffset.y,
 				eye_rdesc[eye].HmdToEyeViewOffset.z);
 
-		glTranslatef(0, -ovrHmd_GetFloat(hmd, OVR_KEY_EYE_HEIGHT, 1.65), 0);
+		// glTranslatef(0, -ovrHmd_GetFloat(hmd, OVR_KEY_EYE_HEIGHT, 1.65), 0);
 
 		glRotatef(180,0,0,0);
 		/* finally draw the scene for this eye */
@@ -283,7 +284,7 @@ void OculusViewer::draw_scene(AVFrame *frame)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dummyFrame->width, dummyFrame->height, 0, GL_RGB, GL_UNSIGNED_BYTE, dummyFrame->data[0]);
 	
 	glEnable(GL_TEXTURE_2D);
-	draw_box(30, 20, 30, -1.0);
+	draw_box(30, 20, 35, -1.0);
 	glDisable(GL_TEXTURE_2D);
 	glDeleteTextures(1, &tex);
 

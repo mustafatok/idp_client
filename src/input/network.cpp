@@ -159,6 +159,7 @@ void UdpSocket::operator()()
 					continue;
 				}
 			} else if (payloadType == PROTOCOL_TYPE_INIT) {
+				cout << "PROTOCOL_TYPE_INIT" << endl;
 				remoteAddress = incomming;
 				connectionCallback(&incomming, inlen);
 			} else if (payloadType == PROTOCOL_TYPE_CLOSE) {

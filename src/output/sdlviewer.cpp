@@ -127,19 +127,29 @@ bool SdlViewer::show(bool fullscreen)
 			currentLFrame = nullptr;
 			currentRFrame = nullptr;
 			frameLock.unlock();
-			if (lf != nullptr && rf != nullptr) { 
+			
+			if(lf == nullptr && rf == nullptr){
+				SDL_Delay(1);
+			}else{
 				renderFrame(lf, rf);
 				frameCounter++;
-				av_frame_free(&lf);
-				av_frame_free(&rf);
-			} else if(lf != nullptr){
-				renderFrame(lf, nullptr);
-				frameCounter++;
-				av_frame_free(&lf);
-			} else{
-						// don't use up 100% of cpu if there is no event in the queue
-				SDL_Delay(1);
 			}
+			if(lf != nullptr) av_frame_free(&lf);
+			if(rf != nullptr) av_frame_free(&rf);
+
+			// if (lf != nullptr && rf != nullptr) { 
+			// 	renderFrame(lf, rf);
+			// 	frameCounter++;
+			// 	av_frame_free(&lf);
+			// 	av_frame_free(&rf);
+			// } else if(lf != nullptr){
+			// 	renderFrame(lf, nullptr);
+			// 	frameCounter++;
+			// 	av_frame_free(&lf);
+			// } else{
+			// 			// don't use up 100% of cpu if there is no event in the queue
+			// 	SDL_Delay(1);
+			// }
 		}
 		t.remember();
 		// TODO change it for single input
@@ -170,10 +180,12 @@ void SdlViewer::showFrame(AVFrame *lFrame, AVFrame *rFrame)
 
 void SdlViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 {
-	if (SDL_UpdateYUVTexture(lFrameTexture, nullptr, lFrame->data[0], lFrame->linesize[0], lFrame->data[1],
-							lFrame->linesize[1], lFrame->data[2], lFrame->linesize[2]) == -1) {
-		cerr << "SDL_UpdateYUVTexture Error: " << SDL_GetError() << endl;
-		return;
+	if(lFrame != nullptr){
+		if (SDL_UpdateYUVTexture(lFrameTexture, nullptr, lFrame->data[0], lFrame->linesize[0], lFrame->data[1],
+								lFrame->linesize[1], lFrame->data[2], lFrame->linesize[2]) == -1) {
+			cerr << "SDL_UpdateYUVTexture Error: " << SDL_GetError() << endl;
+			return;
+		}
 	}
 	if(rFrame != nullptr){
 		if (SDL_UpdateYUVTexture(rFrameTexture, nullptr, rFrame->data[0], rFrame->linesize[0], rFrame->data[1],

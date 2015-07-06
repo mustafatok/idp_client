@@ -39,8 +39,10 @@ int main(int argc, char* argv[])
 
 	UdpSocket socket;
 	// H264Decoder decoder;
-	// MultiH264Decoder decoder("verticalConcat");
-	MultiH264Decoder decoder("leftResized");
+	MultiH264Decoder decoder("verticalConcat");
+	// MultiH264Decoder decoder("leftResized");
+	// MultiH264Decoder decoder("leftBlurred");
+	// MultiH264Decoder decoder("rightBlurred");
 	SdlViewer *viewer = nullptr;
 	
 	bool fullscreen = false;
@@ -53,7 +55,7 @@ int main(int argc, char* argv[])
 		}else if (value == "--help" || value == "-h") {
 			cout << "--help           no idea what exactly this parameter does" << endl
 				 << "--fullscreen     open fullscreen opengl context instead of vga window" << endl
-				 << "--oculusscreen   adjust screen window for Oculus Rift DK2" << endl;
+				 << "--oculus   adjust screen window for Oculus Rift DK2" << endl;
 			return 0;
 		}
 	}

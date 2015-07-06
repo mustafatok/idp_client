@@ -64,8 +64,11 @@ void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
 	}
 	if(id == LEFT){
 		lFrame = frame;
+		// _observer->onDecodeFrameSuccess(_id, frame, nullptr);
+
 	}else{
 		rFrame = frame;
+		// _observer->onDecodeFrameSuccess(_id, nullptr, frame);
 	}
 	if((++_tmpCnt) == 2){
 		// AVFrame *tmpFrame = nullptr;
