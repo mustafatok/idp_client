@@ -26,6 +26,34 @@ const char* TARGET_IP = "127.0.0.1";
 const uint16_t TARGET_PORT = 2525;
 
 
+UdpSocket input;
+// MultiH264Decoder *decoder;
+MultiH264Decoder *decoder;
+
+SdlViewer *viewer = nullptr;
+bool fullscreen = false;
+bool stopped = false;
+
+void init(int mode){
+	if(mode == (int) MODE_VERTICALCONCAT){
+		cout << "MODE_VERTICALCONCAT" << endl;
+	}else if(mode == (int) MODE_LEFTRESIZED){
+		cout << "MODE_LEFTRESIZED" << endl;
+	}else if(mode == (int) MODE_RIGHTRESIZED){
+		cout << "MODE_RIGHTRESIZED" << endl;
+	}else if(mode == (int) MODE_LEFTBLURRED){
+		cout << "MODE_LEFTBLURRED" << endl;
+	}else if(mode == (int) MODE_RIGHTBLURRED){
+		cout << "MODE_RIGHTBLURRED" << endl;
+	}else if(mode == (int) MODE_INTERLEAVING){
+		cout << "MODE_INTERLEAVING" << endl;
+	}
+	decoder = new MultiH264Decoder(mode);
+	input.setInputObserver(0, decoder);
+	decoder->setDecoderObserver(0, viewer);
+	
+}
+
 int main(int argc, char* argv[])
 {
 	/*      Concept:
@@ -37,15 +65,13 @@ int main(int argc, char* argv[])
 			 3) The SdlViewer uses SDL with OpenGL acceleration to show the received frames.
 	 */
 
-	UdpSocket socket;
 	// H264Decoder decoder;
-	MultiH264Decoder decoder("verticalConcat");
+
+	// MultiH264Decoder decoder("verticalConcat");
 	// MultiH264Decoder decoder("leftResized");
 	// MultiH264Decoder decoder("leftBlurred");
 	// MultiH264Decoder decoder("rightBlurred");
-	SdlViewer *viewer = nullptr;
 	
-	bool fullscreen = false;
 	for(int i = 1; i < argc; ++i) {
 		std::string value(argv[i]);
 		if (value == "--fullscreen") {
@@ -65,13 +91,12 @@ int main(int argc, char* argv[])
 
 	
 
-	socket.setInputObserver(0, &decoder);
-	decoder.setDecoderObserver(0, viewer);
-	socket.initClient(TARGET_IP, TARGET_PORT);
-	socket.send(PROTOCOL_TYPE_INIT, nullptr, 0);
+	input.initClient(TARGET_IP, TARGET_PORT);
+	input.setInitCallback(&init);
+	input.send(PROTOCOL_TYPE_INIT, nullptr, 0);
 	viewer->show(fullscreen);
-	socket.send(PROTOCOL_TYPE_CLOSE, nullptr, 0);
-	socket.close();
-	
+	input.send(PROTOCOL_TYPE_CLOSE, nullptr, 0);
+	input.close();
+
 	return 0;
 }

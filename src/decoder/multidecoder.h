@@ -17,7 +17,7 @@ extern "C" {
 
 class MultiH264Decoder : public Decoder, public InputObserver, public DecoderObserver{
 public:
-	explicit MultiH264Decoder(std::string mode);
+	explicit MultiH264Decoder(int mode);
 	virtual ~MultiH264Decoder();
 
 	// Observers' functions override.
@@ -32,7 +32,7 @@ protected:
 
 
 	H264Decoder _decoders[2];
-	std::string _mode;
+	int _mode;
 
 	int _tmpCnt = 0;
 	AVFrame *lFrame;

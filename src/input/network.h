@@ -62,6 +62,10 @@ public:
 		};
 	}
 
+	void setInitCallback(void (*init)(int)){
+		initClientCallback = init;
+	}
+
 private:
 	int _socket = -1;
 	struct sockaddr_in localAddress;
@@ -71,6 +75,7 @@ private:
 	std::function<void (uint8_t, uint8_t*, int)> readCallback;
 	std::function<void (struct sockaddr_in*, int)> connectionCallback;
 	std::function<void (struct sockaddr_in*, int)> closeConnectionCallback;
+	std::function<void (int)>  initClientCallback;
 
 	bool headerValid = false;
 	uint8_t payloadType = 0;

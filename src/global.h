@@ -8,10 +8,19 @@
 
 #define PROTOCOL_TYPE_HEADER                    0x20
 #define PROTOCOL_TYPE_FRAME                     0x21
+#define PROTOCOL_TYPE_MODE_INIT					0x22
 
 #define IS_NALU(a)                              ((a&0xF0) == 0x20)
 
 #define STATUS_INPUT_END                        0x50
+
+#define MODE_VERTICALCONCAT                     0x60
+#define MODE_LEFTRESIZED                        0x61
+#define MODE_RIGHTRESIZED                       0x62
+#define MODE_LEFTBLURRED                        0x63
+#define MODE_RIGHTBLURRED                       0x64
+#define MODE_INTERLEAVING                       0x65
+
 
 #define LEFT 1
 #define RIGHT 2

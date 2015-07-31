@@ -15,12 +15,12 @@ extern "C" {
 #include <libavutil/timestamp.h>
 #include <libavutil/frame.h>
 }
-
+#include "../global.h"
 #include <string.h>
 
 #include "../global.h"
 
-MultiH264Decoder::MultiH264Decoder(std::string mode)
+MultiH264Decoder::MultiH264Decoder(int mode)
 {
 	this->_mode = mode;
 	_decoders[0].setDecoderObserver(LEFT, this);
@@ -32,7 +32,7 @@ MultiH264Decoder::~MultiH264Decoder()
 }
 
 void MultiH264Decoder::onEncodedDataReceived(int id, uint8_t type, uint8_t* data, int size){
-	if(_mode == "verticalConcat"){
+	if(_mode == (int)MODE_VERTICALCONCAT){
 		_decoders[0].onEncodedDataReceived(id, type, data, size);
 	}else{
 		this->deserializeAndDecode(id, type, data, size);
@@ -58,7 +58,7 @@ void MultiH264Decoder::deserializeAndDecode(int id, uint8_t type, uint8_t* data,
 	_decoders[1].onEncodedDataReceived(id, rType, rData, rightSize);
 }
 void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
-	if(_mode == "verticalConcat"){
+	if(_mode == (int)MODE_VERTICALCONCAT){
 		verticalConcat(frame);
 		return;
 	}

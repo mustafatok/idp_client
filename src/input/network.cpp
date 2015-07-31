@@ -132,8 +132,16 @@ void UdpSocket::operator()()
 			payloadType = header[0];
 			uint8_t* sizePtr = &header[1];
 			payloadSize = *(reinterpret_cast<uint32_t*>(sizePtr));
-			cout << "Reading header succeeded, size: " << payloadSize << endl;
+			cout << "Reading header succeeded, size: " << payloadSize;
+			cout << "Payload Type: " << payloadType << endl;
 
+			if(payloadType == (int)PROTOCOL_TYPE_MODE_INIT){
+				cout << "PROTOCOL_TYPE_MODE_INIT" << endl;
+				initClientCallback(payloadSize);
+				payloadSize = 0;
+				headerValid = false;
+				continue;
+			}
 			if (payloadSize > 0) {
 				payload = new uint8_t[payloadSize + 8]; // +8 because of decoder, otherwise we would have to copy everything!!
 			} else {
@@ -141,9 +149,8 @@ void UdpSocket::operator()()
 			}
 
 			headerValid = true;
-		}
-		else
-		{
+				
+		} else {
 			if (payloadSize > 0) {
 				result = recvfrom(_socket, payload + payloadPosition, payloadSize - payloadPosition, MSG_WAITALL, in, &inlen);
 				if (result == 0) {
