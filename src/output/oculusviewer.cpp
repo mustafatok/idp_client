@@ -13,7 +13,27 @@ using namespace std;
 // Some helpers
 unsigned int next_pow2(unsigned int x);
 
-OculusViewer::OculusViewer(int width, int height) : SdlViewer(width, height){}
+OculusViewer::OculusViewer(int width, int height) : SdlViewer(width, height){
+	dummyFrame = av_frame_alloc();
+
+	dummyFrame->width = next_pow2(width);
+	dummyFrame->height = next_pow2(height);
+	
+	dummyFrame->format = PIX_FMT_RGB24;
+	av_frame_get_buffer(dummyFrame, 64);
+
+	swslctx = sws_getContext(width, height,
+                      PIX_FMT_YUV420P,
+                      dummyFrame->width, dummyFrame->height,
+                      PIX_FMT_RGB24,
+                      0, 0, 0, 0);
+
+	swsrctx = sws_getContext(width, height,
+                      PIX_FMT_YUV420P,
+                      dummyFrame->width, dummyFrame->height,
+                      PIX_FMT_RGB24,
+                      0, 0, 0, 0);
+}
 
 int OculusViewer::init(){
 	int i, x, y;
@@ -122,21 +142,6 @@ int OculusViewer::init(){
 		fprintf(stderr, "failed to configure distortion renderer\n");
 	}
 
-
-
-	dummyFrame = av_frame_alloc();
-
-	dummyFrame->width = next_pow2(width);
-	dummyFrame->height = next_pow2(height);
-	
-	dummyFrame->format = PIX_FMT_RGB24;
-	av_frame_get_buffer(dummyFrame, 64);
-
-	swsctx = sws_getContext(width, height,
-                      PIX_FMT_YUV420P,
-                      dummyFrame->width, dummyFrame->height,
-                      PIX_FMT_RGB24,
-                      0, 0, 0, 0);
 	return 0;
 
 }
@@ -233,9 +238,9 @@ void OculusViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 		/* finally draw the scene for this eye */
 
 		if (eye == ovrEye_Left){
-			draw_scene(lFrame); 
+			draw_scene(lFrame, true); 
 		}else{
-			draw_scene(rFrame); 
+			draw_scene(rFrame, false); 
 		}
 		
 		
@@ -262,11 +267,14 @@ void OculusViewer::toggle_hmd_fullscreen()
 
 }
 
-void OculusViewer::draw_scene(AVFrame *frame)
+void OculusViewer::draw_scene(AVFrame *frame, bool leftSign)
 {
 	unsigned int tex;
 
-	sws_scale(swsctx, frame->data, frame->linesize, 0, dummyFrame->height, dummyFrame->data, dummyFrame->linesize);
+	if(leftSign)
+		sws_scale(swslctx, frame->data, frame->linesize, 0, frame->height, dummyFrame->data, dummyFrame->linesize);
+	else
+		sws_scale(swsrctx, frame->data, frame->linesize, 0, frame->height, dummyFrame->data, dummyFrame->linesize);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();

@@ -18,6 +18,21 @@ public:
 	explicit OculusViewer(int width, int height);
 	virtual ~OculusViewer();
 	virtual bool show(bool fullscreen = false);
+	virtual void updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
+		// SdlViewer::updateSize(lWidth, lHeight, rWidth, rHeight);
+		if(swslctx != nullptr) sws_freeContext(swslctx);
+		if(swsrctx != nullptr) sws_freeContext(swsrctx);
+		swslctx = sws_getContext(lWidth, lHeight,
+                  PIX_FMT_YUV420P,
+                  dummyFrame->width, dummyFrame->height,
+                  PIX_FMT_RGB24,
+                  0, 0, 0, 0);
+        swsrctx = sws_getContext(rWidth, rHeight,
+                  PIX_FMT_YUV420P,
+                  dummyFrame->width, dummyFrame->height,
+                  PIX_FMT_RGB24,
+                  0, 0, 0, 0);
+	}
 
 
 private:
@@ -37,10 +52,11 @@ private:
 	unsigned int hmd_caps;
 
 	AVFrame *dummyFrame;
-	SwsContext * swsctx;
+	SwsContext * swslctx = nullptr;
+	SwsContext * swsrctx = nullptr;
 
 	int init();
-	void draw_scene(AVFrame *frame);
+	void draw_scene(AVFrame *frame, bool leftSign);
 	void draw_box(float xsz, float ysz, float zsz, float norm_sign);
 	void update_rtarg(int width, int height);
 	void toggle_hmd_fullscreen();

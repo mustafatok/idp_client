@@ -34,6 +34,8 @@ MultiH264Decoder::~MultiH264Decoder()
 void MultiH264Decoder::onEncodedDataReceived(int id, uint8_t type, uint8_t* data, int size){
 	if(_mode == (int)MODE_VERTICALCONCAT){
 		_decoders[0].onEncodedDataReceived(id, type, data, size);
+	}else if(_mode == (int) MODE_INTERLEAVING){
+		this->deserializeAndDecodeInterleaving(id, type, data, size);
 	}else{
 		this->deserializeAndDecode(id, type, data, size);
 	}
@@ -57,6 +59,17 @@ void MultiH264Decoder::deserializeAndDecode(int id, uint8_t type, uint8_t* data,
 	_decoders[0].onEncodedDataReceived(id, lType, lData, leftSize);
 	_decoders[1].onEncodedDataReceived(id, rType, rData, rightSize);
 }
+
+void MultiH264Decoder::deserializeAndDecodeInterleaving(int id, uint8_t type, uint8_t* data, int size){
+	if(type == PROTOCOL_TYPE_LFRAME){
+		_decoders[0].onEncodedDataReceived(id, PROTOCOL_TYPE_FRAME, data, size);
+	}else if(type == PROTOCOL_TYPE_RFRAME){
+		_decoders[1].onEncodedDataReceived(id, PROTOCOL_TYPE_FRAME, data, size);
+	}else{
+		this->deserializeAndDecode(id, type, data, size);
+	}
+}
+
 void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
 	if(_mode == (int)MODE_VERTICALCONCAT){
 		verticalConcat(frame);
@@ -67,30 +80,19 @@ void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
 		// _observer->onDecodeFrameSuccess(_id, frame, nullptr);
 
 	}else{
+
 		rFrame = frame;
 		// _observer->onDecodeFrameSuccess(_id, nullptr, frame);
 	}
+
 	if((++_tmpCnt) == 2){
-		// AVFrame *tmpFrame = nullptr;
+		_observer->onDecodeFrameSuccess(_id, av_frame_clone(lFrame), av_frame_clone(rFrame));
 
-		// if(_mode == "leftResized"){
-		// 	tmpFrame = lFrame;
-		// }else if(_mode == "rightResized"){
-		// 	tmpFrame = rFrame;
-		// }
-
-		// if(tmpFrame != nullptr){
-		// 	AVFrame* frame2 = av_frame_alloc();
-		// 	int num_bytes = avpicture_get_size(PIX_FMT_YUV420P, tmpFrame->width * 2, tmpFrame->height * 2);
-		// 	uint8_t* frame2_buffer = (uint8_t *)av_malloc(num_bytes*sizeof(uint8_t));
-		// 	avpicture_fill((AVPicture*)frame2, frame2_buffer, PIX_FMT_YUV420P, tmpFrame->width * 2, tmpFrame->height * 2);
-		// 	sws_scale(swsctx, tmpFrame->data, tmpFrame->linesize, 0, tmpFrame->height * 2, frame2->data, frame2->linesize);
-
-		// }
-
-
-		_observer->onDecodeFrameSuccess(_id, lFrame, rFrame);
-		_tmpCnt = 0;
+		if(_mode == (int) MODE_INTERLEAVING){
+			_tmpCnt--;
+		}else{
+			_tmpCnt = 0;
+		}
 	}	
 
 }

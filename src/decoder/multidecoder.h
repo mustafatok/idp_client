@@ -29,6 +29,7 @@ public:
 protected:
 	virtual void verticalConcat(AVFrame *frame);
 	void deserializeAndDecode(int id, uint8_t type, uint8_t* data, int size);
+	void deserializeAndDecodeInterleaving(int id, uint8_t type, uint8_t* data, int size);
 
 
 	H264Decoder _decoders[2];
