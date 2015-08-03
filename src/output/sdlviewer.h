@@ -24,6 +24,7 @@ public:
 	virtual void onDecodeFrameSuccess(int id, AVFrame *lFrame, AVFrame *rFrame) {
 		showFrame(lFrame, rFrame);
 	}
+	virtual void updateSize(int lWidth, int lHeight, int rWidth, int rHeight);
 
 protected:
 
@@ -41,8 +42,8 @@ protected:
 	AVFrame *currentRFrame = nullptr;
 
 	virtual void renderFrame(AVFrame *lFrame, AVFrame *rFrame);
-	int width;
-	int height;
+	int width, _lWidth = -1, _rWidth = -1;
+	int height, _lHeight = -1, _rHeight = -1;
 
 };
 

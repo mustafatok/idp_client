@@ -62,7 +62,7 @@ public:
 		};
 	}
 
-	void setInitCallback(void (*init)(int)){
+	void setInitCallback(void (*init)(int, int, int, int, int)){
 		initClientCallback = init;
 	}
 
@@ -75,7 +75,7 @@ private:
 	std::function<void (uint8_t, uint8_t*, int)> readCallback;
 	std::function<void (struct sockaddr_in*, int)> connectionCallback;
 	std::function<void (struct sockaddr_in*, int)> closeConnectionCallback;
-	std::function<void (int)>  initClientCallback;
+	std::function<void (int, int, int, int, int)>  initClientCallback;
 
 	bool headerValid = false;
 	uint8_t payloadType = 0;

@@ -34,7 +34,11 @@ SdlViewer *viewer = nullptr;
 bool fullscreen = false;
 bool stopped = false;
 
-void init(int mode){
+void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
+	cout << "LW : " << lWidth << endl;
+	cout << "LH : " << lHeigth << endl;
+	cout << "RW : " << rWidth << endl;
+	cout << "RH : " << rHeight << endl;
 	if(mode == (int) MODE_VERTICALCONCAT){
 		cout << "MODE_VERTICALCONCAT" << endl;
 	}else if(mode == (int) MODE_LEFTRESIZED){
@@ -47,7 +51,10 @@ void init(int mode){
 		cout << "MODE_RIGHTBLURRED" << endl;
 	}else if(mode == (int) MODE_INTERLEAVING){
 		cout << "MODE_INTERLEAVING" << endl;
+	}else{
+		return;
 	}
+	viewer->updateSize(lWidth, lHeigth, rWidth, rHeight);
 	decoder = new MultiH264Decoder(mode);
 	input.setInputObserver(0, decoder);
 	decoder->setDecoderObserver(0, viewer);
@@ -88,8 +95,6 @@ int main(int argc, char* argv[])
 	if(viewer == nullptr){
 		viewer = new SdlViewer(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
-
-	
 
 	input.initClient(TARGET_IP, TARGET_PORT);
 	input.setInitCallback(&init);

@@ -27,6 +27,8 @@ SdlViewer::SdlViewer(int width, int height)
 {
 	this->height = height;
 	this->width = width;
+	this->_lHeight = this->_rHeight = height;
+	this->_lWidth = this->_rWidth = width;
 }
 
 SdlViewer::~SdlViewer()
@@ -78,12 +80,12 @@ bool SdlViewer::show(bool fullscreen)
 	}
 	SDL_FreeSurface(bitmap);
 
-	lFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, width, height);
+	lFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _lWidth, _lHeight);
 	if (lFrameTexture == nullptr) {
 		cerr << "SDL_CreateTexture Error: " << SDL_GetError() << endl;
 		return false;
 	}
-	rFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, width, height);
+	rFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _rWidth, _rHeight);
 	if (rFrameTexture == nullptr) {
 		cerr << "SDL_CreateTexture Error: " << SDL_GetError() << endl;
 		return false;
@@ -194,5 +196,36 @@ void SdlViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 			return;
 		}
 	}
+
+}
+
+void SdlViewer::updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
+	_lWidth = lWidth;
+	_lHeight = lHeight;
+	_rWidth = rWidth;
+	_rHeight = rHeight;
+
+	if (lFrameTexture != nullptr) { SDL_DestroyTexture(lFrameTexture); }
+	if (rFrameTexture != nullptr) { SDL_DestroyTexture(rFrameTexture); }
+		lFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _lWidth, _lHeight);
+	if (lFrameTexture == nullptr) {
+		cerr << "SDL_CreateTexture Error: " << SDL_GetError() << endl;
+		return;
+	}
+	rFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _rWidth, _rHeight);
+	if (rFrameTexture == nullptr) {
+		cerr << "SDL_CreateTexture Error: " << SDL_GetError() << endl;
+		return;
+	}
+	SDL_Rect leftRect;
+	SDL_Rect rightRect;
+	leftRect.x = leftRect.y = 0;
+	leftRect.w = rightRect.w = width;
+	leftRect.h = rightRect.h = height;
+	rightRect.x = width;
+	rightRect.y = 0;
+	SDL_RenderCopy(renderer, lFrameTexture, nullptr, &leftRect);
+	SDL_RenderCopy(renderer, rFrameTexture, nullptr, &rightRect);
+
 
 }

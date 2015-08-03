@@ -135,13 +135,6 @@ void UdpSocket::operator()()
 			cout << "Reading header succeeded, size: " << payloadSize;
 			cout << "Payload Type: " << payloadType << endl;
 
-			if(payloadType == (int)PROTOCOL_TYPE_MODE_INIT){
-				cout << "PROTOCOL_TYPE_MODE_INIT" << endl;
-				initClientCallback(payloadSize);
-				payloadSize = 0;
-				headerValid = false;
-				continue;
-			}
 			if (payloadSize > 0) {
 				payload = new uint8_t[payloadSize + 8]; // +8 because of decoder, otherwise we would have to copy everything!!
 			} else {
@@ -161,6 +154,20 @@ void UdpSocket::operator()()
 				} else if (result + payloadPosition == payloadSize) {
 					cout << "Reading payload succeeded, size: " << payloadSize << endl;
 					payloadPosition = 0;
+
+					if(payloadType == (int)PROTOCOL_TYPE_CLIENT_INIT){
+						cout << "PROTOCOL_TYPE_CLIENT_INIT" << endl;
+						int32_t* tmp = reinterpret_cast<int32_t*>(payload);
+
+						if(payload == nullptr){
+							cerr << "Error initilizing client" << endl;
+							exit(1);
+						}
+						initClientCallback(tmp[0], tmp[1], tmp[2],tmp[3], tmp[4]);
+					}else{
+    					_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
+					}
+
 				} else {
 					payloadPosition += result;
 					continue;
@@ -174,8 +181,6 @@ void UdpSocket::operator()()
 			}
 
 			headerValid = false;
-    		_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
-
 		}
 	}
 }

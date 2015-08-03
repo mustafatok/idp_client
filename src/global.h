@@ -8,7 +8,7 @@
 
 #define PROTOCOL_TYPE_HEADER                    0x20
 #define PROTOCOL_TYPE_FRAME                     0x21
-#define PROTOCOL_TYPE_MODE_INIT					0x22
+#define PROTOCOL_TYPE_CLIENT_INIT				0x22
 
 #define IS_NALU(a)                              ((a&0xF0) == 0x20)
 
