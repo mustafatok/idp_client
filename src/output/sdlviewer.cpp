@@ -204,19 +204,26 @@ void SdlViewer::updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
 	_lHeight = lHeight;
 	_rWidth = rWidth;
 	_rHeight = rHeight;
+	// cout << renderer <<"Ahoyyy00" << endl;
 
 	if (lFrameTexture != nullptr) { SDL_DestroyTexture(lFrameTexture); }
 	if (rFrameTexture != nullptr) { SDL_DestroyTexture(rFrameTexture); }
-		lFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _lWidth, _lHeight);
+	// cout << "Ahoyyy01" << endl;
+	
+	lFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _lWidth, _lHeight);
 	if (lFrameTexture == nullptr) {
-		cerr << "SDL_CreateTexture Error: " << SDL_GetError() << endl;
+		cerr << "LSDL_CreateTexture Error: " << SDL_GetError() << endl;
 		return;
 	}
+	// cout << "Ahoyyy02" << endl;
+
 	rFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _rWidth, _rHeight);
 	if (rFrameTexture == nullptr) {
-		cerr << "SDL_CreateTexture Error: " << SDL_GetError() << endl;
+		cerr << "RSDL_CreateTexture Error: " << SDL_GetError() << endl;
 		return;
 	}
+	// cout << "Ahoyyy03" << endl;
+
 	SDL_Rect leftRect;
 	SDL_Rect rightRect;
 	leftRect.x = leftRect.y = 0;

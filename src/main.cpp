@@ -54,11 +54,19 @@ void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
 	}else{
 		return;
 	}
+	cout << viewer << "Ahoyyy1" << endl;
+
 	viewer->updateSize(lWidth, lHeigth, rWidth, rHeight);
+	cout << "Ahoyyy2" << endl;
+
 	decoder = new MultiH264Decoder(mode);
-	input.setInputObserver(0, decoder);
+	cout << "Ahoyyy3" << endl;
+
 	decoder->setDecoderObserver(0, viewer);
-	
+	cout << "Ahoyy4" << endl;
+
+	input.setInputObserver(0, decoder);
+	cout << "Ahoyyy5" << endl;
 }
 
 int main(int argc, char* argv[])
