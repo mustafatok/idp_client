@@ -19,7 +19,6 @@ public:
 	virtual ~OculusViewer();
 	virtual bool show(bool fullscreen = false);
 	virtual void updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
-		// SdlViewer::updateSize(lWidth, lHeight, rWidth, rHeight);
 		if(swslctx != nullptr) sws_freeContext(swslctx);
 		if(swsrctx != nullptr) sws_freeContext(swsrctx);
 		swslctx = sws_getContext(lWidth, lHeight,

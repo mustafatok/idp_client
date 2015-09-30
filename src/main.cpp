@@ -79,13 +79,6 @@ int main(int argc, char* argv[])
 				The decoded data is than passed to the SdlViewer instance;
 			 3) The SdlViewer uses SDL with OpenGL acceleration to show the received frames.
 	 */
-
-	// H264Decoder decoder;
-
-	// MultiH264Decoder decoder("verticalConcat");
-	// MultiH264Decoder decoder("leftResized");
-	// MultiH264Decoder decoder("leftBlurred");
-	// MultiH264Decoder decoder("rightBlurred");
 	
 	for(int i = 1; i < argc; ++i) {
 		std::string value(argv[i]);

@@ -164,6 +164,7 @@ void UdpSocket::operator()()
 							exit(1);
 						}
 						initClientCallback(tmp[0], tmp[1], tmp[2],tmp[3], tmp[4]);
+						delete[] tmp;
 					}else{
     					_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
 					}

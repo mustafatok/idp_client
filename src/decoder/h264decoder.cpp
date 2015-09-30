@@ -104,10 +104,6 @@ void H264Decoder::decodeFrame(uint8_t* data, int size)
 		return;
 	}
 
-	// free memory (this is not handled by the UdpSocket class!)
-	// TODO Test next line
-	// av_free_packet(&packet);
-
 	delete[] data;
 
 	if (gotPicture) {

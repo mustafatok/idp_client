@@ -58,6 +58,9 @@ void MultiH264Decoder::deserializeAndDecode(int id, uint8_t type, uint8_t* data,
 
 	_decoders[0].onEncodedDataReceived(id, lType, lData, leftSize);
 	_decoders[1].onEncodedDataReceived(id, rType, rData, rightSize);
+
+	// Clean Up
+	delete data;
 }
 
 void MultiH264Decoder::deserializeAndDecodeInterleaving(int id, uint8_t type, uint8_t* data, int size){
@@ -68,6 +71,10 @@ void MultiH264Decoder::deserializeAndDecodeInterleaving(int id, uint8_t type, ui
 	}else{
 		this->deserializeAndDecode(id, type, data, size);
 	}
+
+	// Clean Up
+	delete data;
+
 }
 
 void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
@@ -77,12 +84,10 @@ void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
 	}
 	if(id == LEFT){
 		lFrame = frame;
-		// _observer->onDecodeFrameSuccess(_id, frame, nullptr);
 
 	}else{
 
 		rFrame = frame;
-		// _observer->onDecodeFrameSuccess(_id, nullptr, frame);
 	}
 
 	if((++_tmpCnt) == 2){
@@ -93,6 +98,8 @@ void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
 		}else{
 			_tmpCnt = 0;
 		}
+		av_frame_free(&lFrame);
+		av_frame_free(&rFrame);
 	}	
 
 }
@@ -126,9 +133,6 @@ void MultiH264Decoder::verticalConcat(AVFrame *frame)
 	av_frame_get_buffer(leftFrame, 64);
 	av_frame_get_buffer(rightFrame, 64);
 
-
-
-	// TODO Hardcoded i!!!
 	for (int i = 0; i < 3; ++i){
 		int height = frame->height;
 		if(i != 0){

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define WINDOW_TITLE    "LMT Video Player"
+#define WINDOW_TITLE    "Stereo Video Player"
 
 int isMouseEvent(void *, SDL_Event* event)
 {
@@ -138,20 +138,6 @@ bool SdlViewer::show(bool fullscreen)
 			}
 			if(lf != nullptr) av_frame_free(&lf);
 			if(rf != nullptr) av_frame_free(&rf);
-
-			// if (lf != nullptr && rf != nullptr) { 
-			// 	renderFrame(lf, rf);
-			// 	frameCounter++;
-			// 	av_frame_free(&lf);
-			// 	av_frame_free(&rf);
-			// } else if(lf != nullptr){
-			// 	renderFrame(lf, nullptr);
-			// 	frameCounter++;
-			// 	av_frame_free(&lf);
-			// } else{
-			// 			// don't use up 100% of cpu if there is no event in the queue
-			// 	SDL_Delay(1);
-			// }
 		}
 		t.remember();
 		// TODO change it for single input
