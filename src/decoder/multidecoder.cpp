@@ -150,6 +150,11 @@ void MultiH264Decoder::verticalConcat(AVFrame *frame)
 			}
 		}
 	}
-	_observer->onDecodeFrameSuccess(_id, leftFrame, rightFrame);
+	_observer->onDecodeFrameSuccess(_id, av_frame_clone(leftFrame), av_frame_clone(rightFrame));
+
+	// Clean Up
+	av_frame_free(&frame);
+	av_frame_free(&leftFrame);
+	av_frame_free(&rightFrame);
 }
 
