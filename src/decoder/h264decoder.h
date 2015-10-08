@@ -26,7 +26,6 @@ public:
 	}
 
 protected:
-	virtual void decodeHeader(uint8_t *data, int size);
 	virtual void decodeFrame(uint8_t *data, int size);
 	virtual void postProcessFrame();
 

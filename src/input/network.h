@@ -10,6 +10,7 @@
 #include "input.h"
 
 #define HEADER_SIZE 5
+#define BUFFER_SIZE 50000
 
 /*
  * Protocol:
@@ -80,8 +81,9 @@ private:
 	bool headerValid = false;
 	uint8_t payloadType = 0;
 	int32_t payloadSize = 0;
-	int32_t payloadPosition = 0;
 	uint8_t *payload = nullptr;
+
+	uint8_t buffer[BUFFER_SIZE];
 
 };
 

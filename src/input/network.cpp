@@ -45,7 +45,7 @@ bool UdpSocket::initClient(std::string address, uint16_t port)
 	memset(static_cast<void*>(&localAddress), 0, sizeof(struct sockaddr_in));
 	localAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	localAddress.sin_family = AF_INET;
-	localAddress.sin_port = 0;
+	localAddress.sin_port = htons(7070);;
 
 	// bind socket to local interfaces and some random port number
 	if (bind(_socket, reinterpret_cast<struct sockaddr*>(&localAddress), sizeof(struct sockaddr_in)) < 0) {
@@ -107,83 +107,62 @@ void UdpSocket::close()
 	}
 }
 
+// TODO: Add  deserialization
 void UdpSocket::operator()()
 {
 	struct sockaddr_in incomming;
-	struct sockaddr* in = reinterpret_cast<struct sockaddr*>(&incomming);
 	socklen_t inlen = sizeof(struct sockaddr_in);
 	// todo catch EINTR signal
 	while (_socket != -1) {
 		ssize_t result = 0;
 
-		if (!headerValid) {
-			uint8_t header[HEADER_SIZE];
+		result = recvfrom(_socket, &(buffer[0]), BUFFER_SIZE, 0, (struct sockaddr *) &(localAddress), &inlen);
+		// result = recvfrom(_socket, &(buffer[0]), BUFFER_SIZE, MSG_WAITALL, in, &inlen);
 
-			result = recvfrom(_socket, header, HEADER_SIZE, MSG_WAITALL, in, &inlen);
-			if (result == 0) { // orderly shutdown
-				break;
-			} else if (result != HEADER_SIZE) {
-				cerr << "Reading protocol-header failed!, Error: "  << strerror(errno) << endl;
-				continue;
-			}
+		if( buffer[result - 1] != '\n' ){
+			cerr << "Failed reading from network! " << endl;
+			exit(1);
+		}
 
-
-			headerValid = true;
-			payloadType = header[0];
-			uint8_t* sizePtr = &header[1];
-			payloadSize = *(reinterpret_cast<uint32_t*>(sizePtr));
-			cout << "Reading header succeeded, size: " << payloadSize;
-			cout << "Payload Type: " << payloadType << endl;
-
-			if (payloadSize > 0) {
-				payload = new uint8_t[payloadSize + 8]; // +8 because of decoder, otherwise we would have to copy everything!!
-			} else {
-				payload = nullptr;
-			}
-
-			headerValid = true;
-				
+		payloadSize = result - 2;
+		if (result == 0) {
+			break;
+		} else if (result <= 1) {
+			cerr << "Reading payload failed! " << strerror(errno)<< ", recvsize: "<< result  << endl;
+			continue;
 		} else {
-			if (payloadSize > 0) {
-				result = recvfrom(_socket, payload + payloadPosition, payloadSize - payloadPosition, MSG_WAITALL, in, &inlen);
-				if (result == 0) {
-					break;
-				} else if (result < 0) {
-					cerr << "Reading payload failed! " << strerror(errno)<< ", recvsize: "<< result  << endl;
-					continue;
-				} else if (result + payloadPosition == payloadSize) {
-					cout << "Reading payload succeeded, size: " << payloadSize << endl;
-					payloadPosition = 0;
+			cout << "Reading payload succeeded, size: " << result << endl;
+       		payloadType = buffer[0];
 
-					if(payloadType == (int)PROTOCOL_TYPE_CLIENT_INIT){
-						cout << "PROTOCOL_TYPE_CLIENT_INIT" << endl;
-						int32_t* tmp = reinterpret_cast<int32_t*>(payload);
-
-						if(payload == nullptr){
-							cerr << "Error initilizing client" << endl;
-							exit(1);
-						}
-						initClientCallback(tmp[0], tmp[1], tmp[2],tmp[3], tmp[4]);
-						delete[] tmp;
-					}else{
-    					_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
-					}
-
-				} else {
-					payloadPosition += result;
-					continue;
-				}
-			} else if (payloadType == PROTOCOL_TYPE_INIT) {
+       		 if (payloadType == PROTOCOL_TYPE_INIT) {
 				cout << "PROTOCOL_TYPE_INIT" << endl;
 				remoteAddress = incomming;
 				connectionCallback(&incomming, inlen);
+
 			} else if (payloadType == PROTOCOL_TYPE_CLOSE) {
 				closeConnectionCallback(&incomming, inlen);
-			}
+			} else {
+				payload = new uint8_t[payloadSize + 8];
+       			memcpy(payload, &(buffer[1]), payloadSize);
 
-			headerValid = false;
+				if(payloadType == (int)PROTOCOL_TYPE_CLIENT_INIT){
+					cout << "PROTOCOL_TYPE_CLIENT_INIT" << endl;
+					int32_t* tmp = reinterpret_cast<int32_t*>(payload);
+
+					initClientCallback(tmp[0], tmp[1], tmp[2],tmp[3], tmp[4]);
+					delete[] tmp;
+				} else {
+					cout << "payload: " << sizeof(&(payload[0])) << " : " << payloadSize << endl;
+					// cout << "payloadFFF: " << payload[payloadSize-1] << endl;
+					_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
+
+				}
+			} 
 		}
+
 	}
+		
+	
 }
 
 void UdpSocket::send(uint8_t* data, int size)

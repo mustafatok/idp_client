@@ -21,8 +21,7 @@ int DEFAULT_HEIGHT = cfg.getValueOfKey<int>("HEIGHT");
 double DEFAULT_FPS = cfg.getValueOfKey<double>("FPS");
 double EXPOSURE = cfg.getValueOfKey<double>("EXPOSURE");
 bool FULLSCREEN = cfg.getValueOfKey<bool>("FULLSCREEN");
-
-const char* TARGET_IP = "127.0.0.1";
+const char* TARGET_IP = cfg.getValueOfKey<string>("TARGET_IP").c_str();
 const uint16_t TARGET_PORT = 2525;
 
 
@@ -54,19 +53,14 @@ void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
 	}else{
 		return;
 	}
-	cout << viewer << "Ahoyyy1" << endl;
 
 	viewer->updateSize(lWidth, lHeigth, rWidth, rHeight);
-	cout << "Ahoyyy2" << endl;
 
 	decoder = new MultiH264Decoder(mode);
-	cout << "Ahoyyy3" << endl;
 
 	decoder->setDecoderObserver(0, viewer);
-	cout << "Ahoyy4" << endl;
 
 	input.setInputObserver(0, decoder);
-	cout << "Ahoyyy5" << endl;
 }
 
 int main(int argc, char* argv[])

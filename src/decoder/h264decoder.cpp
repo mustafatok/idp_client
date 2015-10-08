@@ -30,31 +30,7 @@ int av_frame_copy(AVFrame *dst, const AVFrame *src);
 H264Decoder::H264Decoder()
 {
 	avcodec_register_all();
-}
 
-H264Decoder::~H264Decoder()
-{
-	if (codecContext != nullptr) {
-		avcodec_close(codecContext);
-		codecContext = nullptr;
-	}
-}
-
-void H264Decoder::decode(uint8_t type, uint8_t* data, int size)
-{
-	if (size == 0 || !IS_NALU(type)) {
-		return;
-	}
-
-	if (type == PROTOCOL_TYPE_HEADER) {
-		decodeHeader(data, size);
-	} else if (type == PROTOCOL_TYPE_FRAME) {
-		decodeFrame(data, size);
-	}
-}
-
-void H264Decoder::decodeHeader(uint8_t* data, int size)
-{
 	picture = av_frame_alloc();
 	if (!picture) {
 		cerr << "Could not allocate target picture." << endl;
@@ -73,17 +49,26 @@ void H264Decoder::decodeHeader(uint8_t* data, int size)
 		return;
 	}
 
-	cout << "Header Decoded!" << endl;
 	av_init_packet(&packet);
+}
 
-	// don't send header information atm, as currently we include this information in the I-Frames
-	/*int gotPicture = 0;
-	packet.data = data;
-	packet.size = size;
-	int res = avcodec_decode_video2(codecContext, picture, &gotPicture, &packet);
-	if (res < 0) {
-		cerr << "Could not decode header information!" << endl;
-	}*/
+H264Decoder::~H264Decoder()
+{
+	if (codecContext != nullptr) {
+		avcodec_close(codecContext);
+		codecContext = nullptr;
+	}
+}
+
+void H264Decoder::decode(uint8_t type, uint8_t* data, int size)
+{
+	if (size == 0 || !IS_NALU(type)) {
+		return;
+	}
+
+	if (type == PROTOCOL_TYPE_FRAME) {
+		decodeFrame(data, size);
+	}
 }
 
 void H264Decoder::decodeFrame(uint8_t* data, int size)
