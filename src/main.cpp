@@ -21,7 +21,6 @@ int DEFAULT_HEIGHT = cfg.getValueOfKey<int>("HEIGHT");
 double DEFAULT_FPS = cfg.getValueOfKey<double>("FPS");
 double EXPOSURE = cfg.getValueOfKey<double>("EXPOSURE");
 bool FULLSCREEN = cfg.getValueOfKey<bool>("FULLSCREEN");
-const char* TARGET_IP = cfg.getValueOfKey<string>("TARGET_IP").c_str();
 const uint16_t TARGET_PORT = 2525;
 
 
@@ -48,6 +47,8 @@ void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
 		cout << "MODE_LEFTBLURRED" << endl;
 	}else if(mode == (int) MODE_RIGHTBLURRED){
 		cout << "MODE_RIGHTBLURRED" << endl;
+	}else if(mode == (int) MODE_SINGLE){
+		cout << "MODE_SINGLE" << endl;
 	}else if(mode == (int) MODE_INTERLEAVING){
 		cout << "MODE_INTERLEAVING" << endl;
 	}else{
@@ -91,7 +92,7 @@ int main(int argc, char* argv[])
 		viewer = new SdlViewer(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
-	input.initClient(TARGET_IP, TARGET_PORT);
+	input.initClient(cfg.getValueOfKey<string>("TARGET_IP").c_str(), TARGET_PORT);
 	input.setInitCallback(&init);
 	input.send(PROTOCOL_TYPE_INIT, nullptr, 0);
 	viewer->show(fullscreen);

@@ -22,6 +22,7 @@
 #define MODE_LEFTBLURRED                        0x63
 #define MODE_RIGHTBLURRED                       0x64
 #define MODE_INTERLEAVING                       0x65
+#define MODE_SINGLE                      		0x66
 
 
 #define LEFT 1
