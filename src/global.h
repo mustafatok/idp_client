@@ -11,6 +11,7 @@
 #define PROTOCOL_TYPE_CLIENT_INIT				0x22
 #define PROTOCOL_TYPE_LFRAME                    0x23
 #define PROTOCOL_TYPE_RFRAME                    0x24
+#define PROTOCOL_TYPE_BINING                    0x25
 
 #define IS_NALU(a)                              ((a&0xF0) == 0x20)
 
@@ -22,6 +23,7 @@
 #define MODE_LEFTBLURRED                        0x63
 #define MODE_RIGHTBLURRED                       0x64
 #define MODE_INTERLEAVING                       0x65
+#define MODE_SINGLE                      		0x66
 
 
 #define LEFT 1

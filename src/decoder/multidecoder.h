@@ -28,6 +28,7 @@ public:
 
 protected:
 	virtual void verticalConcat(AVFrame *frame);
+	virtual void singleFrame(AVFrame *frame);
 	void deserializeAndDecode(int id, uint8_t type, uint8_t* data, int size);
 	void deserializeAndDecodeInterleaving(int id, uint8_t type, uint8_t* data, int size);
 

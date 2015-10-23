@@ -26,6 +26,10 @@ public:
 	}
 	virtual void updateSize(int lWidth, int lHeight, int rWidth, int rHeight);
 
+	void setInputPositionsCallback(void (*callback)(int, int))
+	{
+		inputPositionsCallback = callback;
+	}
 protected:
 
 	SDL_Window *window       = nullptr;
@@ -44,6 +48,9 @@ protected:
 	virtual void renderFrame(AVFrame *lFrame, AVFrame *rFrame);
 	int width, _lWidth = -1, _rWidth = -1;
 	int height, _lHeight = -1, _rHeight = -1;
+
+	std::function<void (int, int)>  inputPositionsCallback;
+	
 
 };
 

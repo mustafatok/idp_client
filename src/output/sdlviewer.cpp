@@ -115,12 +115,17 @@ bool SdlViewer::show(bool fullscreen)
 	while (!stopped) {
 		SDL_Event event;
 
-		if ((SDL_PollEvent(&event) > 0) && 
-			((event.type == SDL_QUIT) || 
-			((event.type == SDL_KEYUP) && 
-			(event.key.keysym.sym == SDLK_ESCAPE)))) {
+		if ((SDL_PollEvent(&event) > 0)){
+
+			if((event.type == SDL_QUIT) || 
+			 ((event.type == SDL_KEYUP) && 
+			 (event.key.keysym.sym == SDLK_ESCAPE))) {
 
 				stopped = true;
+			}else if(event.key.keysym.sym == SDLK_LEFT){
+				std::cout << "LEFTPRESSED" << std::endl;
+				inputPositionsCallback(0, 0);
+			}
 		} else {
 
 			frameLock.lock();

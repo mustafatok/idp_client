@@ -32,7 +32,7 @@ MultiH264Decoder::~MultiH264Decoder()
 }
 
 void MultiH264Decoder::onEncodedDataReceived(int id, uint8_t type, uint8_t* data, int size){
-	if(_mode == (int)MODE_VERTICALCONCAT){
+	if(_mode == (int)MODE_VERTICALCONCAT || _mode == (int)MODE_SINGLE){
 		_decoders[0].onEncodedDataReceived(id, type, data, size);
 	}else if(_mode == (int) MODE_INTERLEAVING){
 		this->deserializeAndDecodeInterleaving(id, type, data, size);
@@ -80,6 +80,9 @@ void MultiH264Decoder::deserializeAndDecodeInterleaving(int id, uint8_t type, ui
 void MultiH264Decoder::onDecodeFrameSuccess(int id, AVFrame *frame){
 	if(_mode == (int)MODE_VERTICALCONCAT){
 		verticalConcat(frame);
+		return;
+	}else if(_mode == (int)MODE_SINGLE){
+		singleFrame(frame);
 		return;
 	}
 	if(id == LEFT){
@@ -156,5 +159,10 @@ void MultiH264Decoder::verticalConcat(AVFrame *frame)
 	av_frame_free(&frame);
 	av_frame_free(&leftFrame);
 	av_frame_free(&rightFrame);
+}
+void MultiH264Decoder::singleFrame(AVFrame *frame)
+{
+	_observer->onDecodeFrameSuccess(_id, av_frame_clone(frame), av_frame_clone(frame));
+	av_frame_free(&frame);
 }
 
