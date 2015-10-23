@@ -131,7 +131,7 @@ void UdpSocket::operator()()
 			cerr << "Reading payload failed! " << strerror(errno)<< ", recvsize: "<< result  << endl;
 			continue;
 		} else {
-			cout << "Reading payload succeeded, size: " << result << endl;
+			// cout << "Reading payload succeeded, size: " << result << endl;
        		payloadType = buffer[0];
 
        		 if (payloadType == PROTOCOL_TYPE_INIT) {
@@ -152,14 +152,13 @@ void UdpSocket::operator()()
 					initClientCallback(tmp[0], tmp[1], tmp[2],tmp[3], tmp[4]);
 					delete[] tmp;
 				} else {
-					cout << "payload: " << sizeof(&(payload[0])) << " : " << payloadSize << endl;
+					// cout << "payload: " << sizeof(&(payload[0])) << " : " << payloadSize << endl;
 					// cout << "payloadFFF: " << payload[payloadSize-1] << endl;
 					_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
 
 				}
 			} 
 		}
-
 	}
 		
 	

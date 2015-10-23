@@ -142,6 +142,9 @@ int OculusViewer::init(){
 		fprintf(stderr, "failed to configure distortion renderer\n");
 	}
 
+	if (!ovrHmd_ConfigureTracking(hmd, ovrTrackingCap_Orientation | ovrTrackingCap_Position, 0)) {
+		fprintf(stderr, "failed to configure position tracker\n");
+    }
 	return 0;
 
 }
@@ -243,7 +246,14 @@ void OculusViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 			draw_scene(rFrame, false); 
 		}
 		
-		
+		// Query the HMD for the current tracking state.
+		ovrTrackingState ts  = ovrHmd_GetTrackingState(hmd, ovr_GetTimeInSeconds());
+
+		if (ts.StatusFlags & (ovrStatus_OrientationTracked | ovrStatus_PositionTracked)) 
+		{
+			ovrPosef pose = ts.HeadPose.ThePose;
+			std::cout << pose.Position.x << " " << pose.Position.y << " " << pose.Position.z <<std::endl;
+		}
 
 
 	}

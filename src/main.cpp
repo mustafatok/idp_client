@@ -21,7 +21,6 @@ int DEFAULT_HEIGHT = cfg.getValueOfKey<int>("HEIGHT");
 double DEFAULT_FPS = cfg.getValueOfKey<double>("FPS");
 double EXPOSURE = cfg.getValueOfKey<double>("EXPOSURE");
 bool FULLSCREEN = cfg.getValueOfKey<bool>("FULLSCREEN");
-const char* TARGET_IP = cfg.getValueOfKey<string>("TARGET_IP").c_str();
 const uint16_t TARGET_PORT = 2525;
 
 
@@ -91,7 +90,7 @@ int main(int argc, char* argv[])
 		viewer = new SdlViewer(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
-	input.initClient(TARGET_IP, TARGET_PORT);
+	input.initClient(cfg.getValueOfKey<string>("TARGET_IP").c_str(), TARGET_PORT);
 	input.setInitCallback(&init);
 	input.send(PROTOCOL_TYPE_INIT, nullptr, 0);
 	viewer->show(fullscreen);
