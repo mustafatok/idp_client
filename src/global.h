@@ -11,6 +11,7 @@
 #define PROTOCOL_TYPE_CLIENT_INIT				0x22
 #define PROTOCOL_TYPE_LFRAME                    0x23
 #define PROTOCOL_TYPE_RFRAME                    0x24
+#define PROTOCOL_TYPE_BINING                    0x25
 
 #define IS_NALU(a)                              ((a&0xF0) == 0x20)
 

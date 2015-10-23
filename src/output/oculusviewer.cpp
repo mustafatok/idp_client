@@ -26,13 +26,13 @@ OculusViewer::OculusViewer(int width, int height) : SdlViewer(width, height){
                       PIX_FMT_YUV420P,
                       dummyFrame->width, dummyFrame->height,
                       PIX_FMT_RGB24,
-                      0, 0, 0, 0);
+                      SWS_BICUBIC, 0, 0, 0);
 
 	swsrctx = sws_getContext(width, height,
                       PIX_FMT_YUV420P,
                       dummyFrame->width, dummyFrame->height,
                       PIX_FMT_RGB24,
-                      0, 0, 0, 0);
+                      SWS_BICUBIC, 0, 0, 0);
 }
 
 int OculusViewer::init(){

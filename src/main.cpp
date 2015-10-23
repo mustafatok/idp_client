@@ -32,6 +32,11 @@ SdlViewer *viewer = nullptr;
 bool fullscreen = false;
 bool stopped = false;
 
+void inputPositionsCallback(int x, int y){
+	input.sendInputParams(x, y);
+}
+
+
 void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
 	cout << "LW : " << lWidth << endl;
 	cout << "LH : " << lHeigth << endl;
@@ -95,6 +100,7 @@ int main(int argc, char* argv[])
 	input.initClient(cfg.getValueOfKey<string>("TARGET_IP").c_str(), TARGET_PORT);
 	input.setInitCallback(&init);
 	input.send(PROTOCOL_TYPE_INIT, nullptr, 0);
+	viewer->setInputPositionsCallback(&inputPositionsCallback);
 	viewer->show(fullscreen);
 	input.send(PROTOCOL_TYPE_CLOSE, nullptr, 0);
 	input.close();

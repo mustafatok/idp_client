@@ -183,3 +183,14 @@ void UdpSocket::send(uint8_t type, uint8_t* data, int size)
 }
 
 
+void UdpSocket::sendInputParams(int32_t x, int32_t y){
+	int size = sizeof(int32_t) * 2;
+	uint8_t* data;
+	data = new uint8_t[size];
+	int32_t* tmp;
+	tmp = reinterpret_cast<int32_t*>(data);
+	*tmp = x;
+	*(tmp + 1) = y;
+	this->send(PROTOCOL_TYPE_BINING, &(data[0]), size);
+	delete[] data;
+}
