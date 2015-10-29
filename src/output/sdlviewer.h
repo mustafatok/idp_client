@@ -26,9 +26,13 @@ public:
 	}
 	virtual void updateSize(int lWidth, int lHeight, int rWidth, int rHeight);
 
-	void setInputPositionsCallback(void (*callback)(int, int))
+	void setInputCallback(void (*callback)(int, int))
 	{
-		inputPositionsCallback = callback;
+		inputCallback = callback;
+	}
+	void setPositionCallback(void (*callback)(float , float , float ))
+	{
+		positionCallback = callback;
 	}
 protected:
 
@@ -49,7 +53,8 @@ protected:
 	int width, _lWidth = -1, _rWidth = -1;
 	int height, _lHeight = -1, _rHeight = -1;
 
-	std::function<void (int, int)>  inputPositionsCallback;
+	std::function<void (int, int)>  inputCallback;
+	std::function<void ( float,  float,  float)>  positionCallback;
 	
 
 };

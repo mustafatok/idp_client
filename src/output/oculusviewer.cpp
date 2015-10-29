@@ -252,6 +252,7 @@ void OculusViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 		if (ts.StatusFlags & (ovrStatus_OrientationTracked | ovrStatus_PositionTracked)) 
 		{
 			ovrPosef pose = ts.HeadPose.ThePose;
+			positionCallback( pose.Position.x, pose.Position.y, pose.Position.z );
 			std::cout << pose.Position.x << " " << pose.Position.y << " " << pose.Position.z <<std::endl;
 		}
 

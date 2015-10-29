@@ -31,9 +31,19 @@ MultiH264Decoder *decoder;
 SdlViewer *viewer = nullptr;
 bool fullscreen = false;
 bool stopped = false;
+float _x = 100;  float _y =  100 ;  float _z  = 100;
 
-void inputPositionsCallback(int x, int y){
+void inputCallback(int x, int y){
 	input.sendInputParams(x, y);
+}
+
+void positionCallback( float x,  float y,  float z){
+	if(!(_x == 100 || _y == 100 || _z == 100)){
+		input.sendPositionParams(_x - x, _y - y, _z - z);
+	}
+	_x = x;
+	_y = y;
+	_z = z;
 }
 
 
@@ -100,7 +110,8 @@ int main(int argc, char* argv[])
 	input.initClient(cfg.getValueOfKey<string>("TARGET_IP").c_str(), TARGET_PORT);
 	input.setInitCallback(&init);
 	input.send(PROTOCOL_TYPE_INIT, nullptr, 0);
-	viewer->setInputPositionsCallback(&inputPositionsCallback);
+	viewer->setInputCallback(&inputCallback);
+	viewer->setPositionCallback(&positionCallback);
 	viewer->show(fullscreen);
 	input.send(PROTOCOL_TYPE_CLOSE, nullptr, 0);
 	input.close();

@@ -193,3 +193,16 @@ void UdpSocket::sendInputParams(int32_t x, int32_t y){
 	this->send(PROTOCOL_TYPE_BINING, &(data[0]), size);
 	delete[] data;
 }
+
+void UdpSocket::sendPositionParams( float x,  float y,  float z){
+	int size = sizeof( float) * 3;
+	uint8_t* data;
+	data = new uint8_t[size];
+	float* tmp;
+	tmp = reinterpret_cast< float*>(data);
+	*tmp = x;
+	*(tmp + 1) = y;
+	*(tmp + 2) = z;
+	this->send(PROTOCOL_TYPE_POSITION, &(data[0]), size);
+	delete[] data;
+}

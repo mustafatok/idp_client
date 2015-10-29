@@ -124,7 +124,7 @@ bool SdlViewer::show(bool fullscreen)
 				stopped = true;
 			}else if(event.key.keysym.sym == SDLK_LEFT){
 				std::cout << "LEFTPRESSED" << std::endl;
-				inputPositionsCallback(0, 0);
+				inputCallback(0, 0);
 			}
 		} else {
 

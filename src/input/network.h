@@ -37,6 +37,7 @@ public:
 	void send(uint8_t* data, int size);
 	void send(uint8_t type, uint8_t* data, int size);
 	void sendInputParams(int32_t x, int32_t y);
+	void sendPositionParams( float x,  float y,  float z);
 
 	void setConnectionCallback(connection_callback_t* callback)
 	{
