@@ -55,6 +55,8 @@ protected:
 
 	std::function<void (int, int)>  inputCallback;
 	std::function<void ( float,  float,  float)>  positionCallback;
+	std::mutex mtxSwsContext;
+	
 	
 
 };

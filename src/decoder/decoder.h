@@ -10,9 +10,12 @@ public:
 		this->_observer = observer; 
 		this->_id = id;
 	}
+	void releaseObserver(){
+		_observer = nullptr;
+	}
 protected:
 
-	DecoderObserver* _observer;
+	DecoderObserver* _observer = nullptr;
 	int _id;
 };
 

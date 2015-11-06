@@ -2,6 +2,8 @@
 #define __OCULUSVIEWER_H
 
 #include "sdlviewer.h"
+#include <iostream>
+#include <mutex>
 
 #include <GL/glew.h>
 
@@ -19,18 +21,28 @@ public:
 	virtual ~OculusViewer();
 	virtual bool show(bool fullscreen = false);
 	virtual void updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
+		mtxSwsContext.lock();
+		std::cout << "OR0" << std::endl;
+		
+
 		if(swslctx != nullptr) sws_freeContext(swslctx);
 		if(swsrctx != nullptr) sws_freeContext(swsrctx);
+		std::cout << "OR1" << std::endl;
+
 		swslctx = sws_getContext(lWidth, lHeight,
                   PIX_FMT_YUV420P,
                   dummyFrame->width, dummyFrame->height,
                   PIX_FMT_RGB24,
                   0, 0, 0, 0);
+		std::cout << "OR2" << std::endl;
         swsrctx = sws_getContext(rWidth, rHeight,
                   PIX_FMT_YUV420P,
                   dummyFrame->width, dummyFrame->height,
                   PIX_FMT_RGB24,
                   0, 0, 0, 0);
+		std::cout << "OR3" << std::endl;
+		mtxSwsContext.unlock();
+
 	}
 
 
@@ -52,7 +64,7 @@ private:
 
 	AVFrame *dummyFrame;
 	SwsContext * swslctx = nullptr;
-	SwsContext * swsrctx = nullptr;
+	SwsContext * swsrctx = nullptr;	
 
 	int init();
 	void draw_scene(AVFrame *frame, bool leftSign);

@@ -146,9 +146,11 @@ bool SdlViewer::show(bool fullscreen)
 		}
 		t.remember();
 		// TODO change it for single input
+		mtxSwsContext.lock();
 		SDL_RenderCopy(renderer, lFrameTexture, nullptr, &leftRect);
 		SDL_RenderCopy(renderer, rFrameTexture, nullptr, &rightRect);
 		SDL_RenderPresent(renderer);
+		mtxSwsContext.unlock();
 	}
 
 	int64_t decoding = t.diff_ys();
@@ -173,6 +175,7 @@ void SdlViewer::showFrame(AVFrame *lFrame, AVFrame *rFrame)
 
 void SdlViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 {
+	mtxSwsContext.lock();
 	if(lFrame != nullptr){
 		if (SDL_UpdateYUVTexture(lFrameTexture, nullptr, lFrame->data[0], lFrame->linesize[0], lFrame->data[1],
 								lFrame->linesize[1], lFrame->data[2], lFrame->linesize[2]) == -1) {
@@ -187,29 +190,39 @@ void SdlViewer::renderFrame(AVFrame *lFrame, AVFrame *rFrame)
 			return;
 		}
 	}
+	mtxSwsContext.unlock();
 
 }
 
 void SdlViewer::updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
+	mtxSwsContext.lock();
+	cout << "SDL0" << endl;
 	_lWidth = lWidth;
 	_lHeight = lHeight;
 	_rWidth = rWidth;
 	_rHeight = rHeight;
 
+	cout << "SDL1" << endl;
+
 	if (lFrameTexture != nullptr) { SDL_DestroyTexture(lFrameTexture); }
 	if (rFrameTexture != nullptr) { SDL_DestroyTexture(rFrameTexture); }
+	cout << "SDL2" << endl;
 	
 	lFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _lWidth, _lHeight);
 	if (lFrameTexture == nullptr) {
 		cerr << "LSDL_CreateTexture Error: " << SDL_GetError() << endl;
+		goto end;
 		return;
 	}
+	cout << "SDL3" << endl;
 
 	rFrameTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC, _rWidth, _rHeight);
 	if (rFrameTexture == nullptr) {
 		cerr << "RSDL_CreateTexture Error: " << SDL_GetError() << endl;
+		goto end;
 		return;
 	}
+	cout << "SDL4" << endl;
 
 	SDL_Rect leftRect;
 	SDL_Rect rightRect;
@@ -220,6 +233,8 @@ void SdlViewer::updateSize(int lWidth, int lHeight, int rWidth, int rHeight){
 	rightRect.y = 0;
 	SDL_RenderCopy(renderer, lFrameTexture, nullptr, &leftRect);
 	SDL_RenderCopy(renderer, rFrameTexture, nullptr, &rightRect);
-
+	cout << "SDL5" << endl;
+end:
+	mtxSwsContext.unlock();
 
 }

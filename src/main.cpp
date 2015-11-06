@@ -48,6 +48,8 @@ void positionCallback( float x,  float y,  float z){
 
 
 void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
+	if(decoder != nullptr) decoder->releaseObserver();
+
 	cout << "LW : " << lWidth << endl;
 	cout << "LH : " << lHeigth << endl;
 	cout << "RW : " << rWidth << endl;
@@ -69,14 +71,21 @@ void init(int mode, int lWidth, int lHeigth, int rWidth, int rHeight){
 	}else{
 		return;
 	}
-
+	cout << "Hoop1" << endl;
+	cout << "Vw" << viewer << endl;
 	viewer->updateSize(lWidth, lHeigth, rWidth, rHeight);
+	cout << "Hoop2" << endl;
 
+	// TODO: DELETE OLD DECODER
 	decoder = new MultiH264Decoder(mode);
+	cout << "Hoop3" << endl;
 
 	decoder->setDecoderObserver(0, viewer);
+	cout << "Hoop4" << endl;
 
 	input.setInputObserver(0, decoder);
+
+	cout << "Hoop5" << endl;
 }
 
 int main(int argc, char* argv[])

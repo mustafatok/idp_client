@@ -148,13 +148,13 @@ void UdpSocket::operator()()
 				if(payloadType == (int)PROTOCOL_TYPE_CLIENT_INIT){
 					cout << "PROTOCOL_TYPE_CLIENT_INIT" << endl;
 					int32_t* tmp = reinterpret_cast<int32_t*>(payload);
-
+					_observer = nullptr;
 					initClientCallback(tmp[0], tmp[1], tmp[2],tmp[3], tmp[4]);
 					delete[] tmp;
 				} else {
 					// cout << "payload: " << sizeof(&(payload[0])) << " : " << payloadSize << endl;
 					// cout << "payloadFFF: " << payload[payloadSize-1] << endl;
-					_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
+					if(_observer != nullptr)_observer->onEncodedDataReceived(_id, payloadType, payload, payloadSize);
 
 				}
 			} 
